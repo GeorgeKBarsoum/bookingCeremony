@@ -57,7 +57,7 @@ export const postinfo = async (req, res) => {
         });
 };
 
-// Validation Part
+// Validation helper Functions Part
 
 function validateChurchMember(member) {
     const id = member.nationalId;
