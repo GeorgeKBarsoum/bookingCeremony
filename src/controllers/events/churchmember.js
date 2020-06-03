@@ -12,6 +12,7 @@ export const getinfo = (req, res) => {
                 res.status(404).send({
                     message: i18n.__("This User "+id +"doesn't exist")
                 });
+            
             else res.send(data);
         })
         .catch(err => {
@@ -27,18 +28,20 @@ export const getinfo = (req, res) => {
 
 //create new users
 export const postinfo = async (req, res) => {
-    var array = req;
+    var array = req.body;
     array.forEach(element => {validateChurchMember(element)
     });
     array.forEach(element => {
         if(element != null)
         {
-            var myobj = { nationalId: element.nationalId, name: element.name,mobile:element.mobile};
+            var myobj = {nationalId: element.nationalId, name: element.name,mobile:element.mobile,enable : element.IsEnable ,lastdate:element.data};
 
             const churchmember = new ChurchMember({
-                nationalId: element.params.nationalId,
-                 name: element.params.name,
-                 mobile:element.params.mobile
+                nationalId: element.body.nationalId,
+                 name: element.body.name,
+                 mobile:element.body.name,
+                 enable:true,
+                 lastdate:null
                 
             });
         
@@ -48,13 +51,25 @@ export const postinfo = async (req, res) => {
    var result = await churchmember.save()
 
         .then(data => {
+            console.log("right")
             res.send(data);
         })
         .catch(err => {
+            console.log("wrong")
             res.status(500).send({
                 message: err.message
             });
         });
+};
+
+
+//Update user
+
+export const update = (req, res) => {
+    const {
+        error
+    } = validateChurchMember(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
 };
 
 // Validation helper Functions Part

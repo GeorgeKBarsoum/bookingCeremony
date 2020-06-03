@@ -14,6 +14,17 @@ const churchmemberschema = mongoose.Schema({
         type: String,
         required: [true, i18n.__('mobile i sRequired')]
     },
+    LastBooking:{
+        type:Date,
+        required: [true, i18n.__('Lastbooking is Required')]
+    },
+
+    IsEnable: {
+        type: Boolean,
+        required: [true, i18n.__('Is enabled is Required')]
+
+    }
+
 });
 
 churchmemberschema.method("toJSON", function() {
@@ -22,5 +33,5 @@ churchmemberschema.method("toJSON", function() {
     return object;
   });
 
-const Churchmember = mongoose.model('.ChurchMember', churchmemberschema);
+const Churchmember = mongoose.model('ChurchMember', churchmemberschema);
 export default Churchmember;
