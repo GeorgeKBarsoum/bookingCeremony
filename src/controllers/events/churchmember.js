@@ -96,7 +96,7 @@ function validateChurchMemberId(id){
     try{
         var reg = new RegExp('^[0-9]+$');
         var test =reg.test(id);
-    if (String(id).length==14 && test == true)
+    if (String(id).length==15 && test == true)
     {
         return true;
 
