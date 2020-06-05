@@ -28,7 +28,7 @@ export const getinfo = (req, res) => {
 
 //create new users
 export const postinfo = async (req, res) => {
-    var array = req.body;
+    var array = req.body.data;
     array.forEach(element => {validateChurchMember(element)
     });
     array.forEach(element => {
@@ -68,7 +68,7 @@ export const postinfo = async (req, res) => {
 export const update = (req, res) => {
     const {
         error
-    } = validateChurchMember(req.body);
+    } = validateChurchMember(req.body.ChurchMember);
     if (error) return res.status(400).send(error.details[0].message);
 };
 
