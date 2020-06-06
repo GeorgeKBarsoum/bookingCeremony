@@ -2,9 +2,12 @@ import mongoose from 'mongoose';
 import i18n from '../../localization';
 
 const churchmemberschema = mongoose.Schema({
+    _id : { type : String},
+    
     nationalid: {
-        type: Number,
-        required: [true, i18n.__('Id is required')],
+        type:Number, 
+        required: [ true, i18n.__('Id is required')],
+        unique: true 
     },
     name: {
         type: String,
@@ -16,20 +19,20 @@ const churchmemberschema = mongoose.Schema({
     },
     LastBooking:{
         type:Date,
-        required: [true, i18n.__('Lastbooking is Required')]
     },
 
     IsEnable: {
         type: Boolean,
-        required: [true, i18n.__('Is enabled is Required')]
-
+        
     }
 
 });
 
 churchmemberschema.method("toJSON", function() {
-    const { __v, _id, ...object } = this.toObject();
-    object.id = churchmemberschema.nationalid;
+   
+    const { object } = this.toObject();
+    
+    
     return object;
   });
 

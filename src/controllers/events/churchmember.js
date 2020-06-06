@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import i18n from '../../localization';
+import { Mongoose, mongo } from 'mongoose';
 const db = require("../../db");
 const ChurchMember = db.ChurchMember;
 
@@ -28,67 +29,124 @@ export const getinfo = (req, res) => {
 
 //create new users
 export const postinfo = async (req, res) => {
-    var array = req.body.data;
-    array.forEach(element => {validateChurchMember(element)
-    });
-    array.forEach(element => {
-        if(element != null)
-        {
-            var myobj = {nationalId: element.nationalId, name: element.name,mobile:element.mobile,enable : element.IsEnable ,lastdate:element.data};
+    //console.log("Entered")
+    var array = req.body;
+   
+    var saved=[];
+    var result;
+    for(var i = 0 ; i < array.length;i++)
 
-            const churchmember = new ChurchMember({
-                nationalId: element.body.nationalId,
-                 name: element.body.name,
-                 mobile:element.body.name,
-                 enable:true,
-                 lastdate:null
+    {
+       
+       
+
+        if(array[i]!= null && validateChurchMember(array[i]))
+        {
+          
+            const churchmember = new ChurchMember({         
+                 
+                 nationalid: array[i].nationalid,
+                 name: array[i].name,
+                 mobile:array[i].mobile,
+                 IsEnable:true,
+                 lastBooking:null
                 
             });
-        
-        }
-        
-    });
-   var result = await churchmember.save()
+        result= await ChurchMember.insertMany(array[i]);
+        saved.push(churchmember._id);
+    }
+    if(saved != [])
 
-        .then(data => {
-            console.log("right")
-            res.send(data);
-        })
-        .catch(err => {
-            console.log("wrong")
-            res.status(500).send({
-                message: err.message
-            });
-        });
+    {
+        res.send(saved)
+        
+    }
+    else{
+        res.status(500).send({
+                   message: err.message
+                });
+
+    }
+   
+        // saved.then(data => {
+        //     console.log("right")
+        //     res.send(data);
+        // })
+        // .catch(err => {
+        //     console.log("wrong")
+        //     
+        //    
+        // });
+        
+    };
+   
 };
+
 
 
 //Update user
 
 export const update = (req, res) => {
-    const {
-        error
-    } = validateChurchMember(req.body.ChurchMember);
-    if (error) return res.status(400).send(error.details[0].message);
+    var element = req.body[1];
+    
+    if(validateChurchMember(element))
+    {
+        var myquery =  req.body[0] ;
+        var newvalues =   req.body[1] ;
+        
+        console.log(req.body[0])
+       const churchmember = db.ChurchMember.update(myquery, newvalues,function(err, result) {
+        if (err) {
+          res.send(err);
+        } else {
+          res.send(result);
+        }
+      });
+        churchmember.save();
+        res.send(req.body[0].nationalid)
+   
+    }
+    else{
+        res.status(500).send({
+                   message: err.message
+                });
+
+    }
+ 
+    
+
+
+  
 };
 
 // Validation helper Functions Part
 
 function validateChurchMember(member) {
-    const id = member.nationalId;
+    const id = member.nationalid;
     const name = member.name;
     const mobile = member.mobile;
 
+
     const checkid =validateChurchMemberId(id);
+    console.log("id")
+    console.log(checkid)
+    
+    
     const checkname =validateChurchMemberName(name);
+    console.log("name")
+    console.log(checkname)
+    
     const  checkmobile= validateChurchMemberMobile(mobile);
+    console.log("mobile")
+    console.log(checkmobile)
+    
     if(checkid == true && checkname == true && checkmobile == true)
     {
-        return member;
+        return true;
     } 
     else
     {
-        return null;
+        return false;
     }
 }
 
@@ -96,7 +154,9 @@ function validateChurchMemberId(id){
     try{
         var reg = new RegExp('^[0-9]+$');
         var test =reg.test(id);
-    if (String(id).length==15 && test == true)
+        
+      
+    if (id.length==14 && test == true)
     {
         return true;
 
@@ -115,12 +175,22 @@ catch{
 
 function validateChurchMemberName(name){
     try{
+       
+        console.log(name)
         var arabic = /[\u0600-\u06FF]/;
-        var test =arabic.test(name);
+      
 
-        var length = String(name).split(" ").length - 1;
+        const test=arabic.test(name);
+      
 
-    if (test ==true && length == 4)
+       
+
+        const size = (name.split(" ").length ) ;
+        
+
+       
+
+    if ( size == 4 && test == true)
     {
         return true;
     }
@@ -130,6 +200,7 @@ function validateChurchMemberName(name){
     }
 }
 catch{
+    
     return false;
 }
 }
@@ -139,8 +210,10 @@ function validateChurchMemberMobile(mobile)
     try{
         var test1 = String(mobile);
         var reg = new RegExp('^[0-9]+$');
-        var test2 =reg.test(id);
-        if(test[0]=="0" && test[1]=="1" && test2 ==true )
+        var test2 =reg.test(mobile);
+      
+        
+        if( test1[0]=='0'&&test1[1]=="1"&& test2 ==true && test1.length==11)
         { 
             return true;
             
