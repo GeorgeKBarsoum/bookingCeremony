@@ -37,9 +37,6 @@ export const postinfo = async (req, res) => {
     for(var i = 0 ; i < array.length;i++)
 
     {
-       
-       
-
         if(array[i]!= null && validateChurchMember(array[i]))
         {
           
@@ -52,8 +49,16 @@ export const postinfo = async (req, res) => {
                  lastBooking:null
                 
             });
-        result= await ChurchMember.insertMany(array[i]);
-        saved.push(churchmember._id);
+            try{
+                result= await ChurchMember.insertMany(array[i]);
+           
+            }
+           catch{
+       
+        const natid ={ nationalid: array[i].nationalid}
+        var ismember= db.ChurchMember.findOneAndUpdate(natid,churchmember)
+           }
+        saved.push(churchmember);
     }
     if(saved != [])
 
@@ -128,17 +133,14 @@ function validateChurchMember(member) {
 
 
     const checkid =validateChurchMemberId(id);
-    console.log("id")
-    console.log(checkid)
+   
     
     
     const checkname =validateChurchMemberName(name);
-    console.log("name")
-    console.log(checkname)
+  
     
     const  checkmobile= validateChurchMemberMobile(mobile);
-    console.log("mobile")
-    console.log(checkmobile)
+  
     
     if(checkid == true && checkname == true && checkmobile == true)
     {

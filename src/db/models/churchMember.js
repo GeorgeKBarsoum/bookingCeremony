@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import i18n from '../../localization';
 
 const churchmemberschema = mongoose.Schema({
-    _id : { type : String},
+    
     
     nationalid: {
         type:Number, 
@@ -30,7 +30,9 @@ const churchmemberschema = mongoose.Schema({
 
 churchmemberschema.method("toJSON", function() {
    
-    const { object } = this.toObject();
+    const { __v, _id, ...object } = this.toObject();
+    object.id = _id;
+    return object;
     
     
     return object;
